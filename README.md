@@ -286,7 +286,7 @@ solace-hri-ar26/
 | **Neha** | ML Engineer (face-api.js emotion detection pipeline + integration) |
 
 *University of West London — BSc Computer Science*
-*AR26 HackXelerator 2026 — Mission 3: Human-Robot Interaction*
+*AR26 HackXelerator 2026 by KXSB — Mission 3: Human-Robot Interaction*
 
 ---
 
