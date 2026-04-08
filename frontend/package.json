@@ -19,6 +19,16 @@
     "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
   },
   "browser": {
-    "fs": false
+    "fs": false,
+    "path": false,
+    "os": false,
+    "crypto": false
+  },
+  "eslintConfig": {
+    "extends": ["react-app"],
+    "rules": {
+      "no-unused-vars": "off",
+      "import/no-anonymous-default-export": "off"
+    }
   }
 }
