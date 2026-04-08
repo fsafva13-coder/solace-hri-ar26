@@ -6,19 +6,21 @@ const useEmotionDetection = (videoRef) => {
   const [isReady, setIsReady] = useState(false);
   const intervalRef = useRef(null);
 
-  // Step 1: Load the models from /models folder
   useEffect(() => {
     const loadModels = async () => {
-      const MODEL_URL = "/models";
-      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
-      console.log("✅ SOLACE models loaded!");
-      setIsReady(true);
+      try {
+        const MODELS_URL = "https://justadudewhohacks.github.io/face-api.js/models";
+        await faceapi.nets.tinyFaceDetector.loadFromUri(MODELS_URL);
+        await faceapi.nets.faceExpressionNet.loadFromUri(MODELS_URL);
+        console.log("✅ SOLACE models loaded!");
+        setIsReady(true);
+      } catch (err) {
+        console.error("❌ Model load failed:", err);
+      }
     };
     loadModels();
   }, []);
 
-  // Step 2: Start detecting emotions every second
   useEffect(() => {
     if (!isReady || !videoRef?.current) return;
 
@@ -31,9 +33,7 @@ const useEmotionDetection = (videoRef) => {
         .withFaceExpressions();
 
       if (detection) {
-        const scores = detection.expressions;
-        setEmotions(scores);
-        console.log("😊 Detected emotions:", scores);
+        setEmotions(detection.expressions);
       }
     }, 1000);
 

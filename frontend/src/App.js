@@ -204,8 +204,12 @@ function App() {
           onClick={() => {
             setSimulatedEmotions(null);
             setVideoLoaded(false);
-            if (videoRef.current) { videoRef.current.src = ""; }
-          }}
+            if (videoRef.current) {
+              videoRef.current.pause();
+              videoRef.current.removeAttribute("src");
+              videoRef.current.load();
+            }
+         }}
           style={{
             background: "transparent", border: "1px solid #334",
             color: "#334", padding: "4px 16px", borderRadius: "20px",
