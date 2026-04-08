@@ -10,6 +10,7 @@ function App() {
   const { emotions, isReady } = useEmotionDetection(videoRef);
   const [moodHistory, setMoodHistory] = useState([]);
   const [simulatedEmotions, setSimulatedEmotions] = useState(null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   const activeEmotions = simulatedEmotions || emotions;
 
@@ -29,6 +30,17 @@ function App() {
     const scores = { happy: 0.02, sad: 0.02, angry: 0.02, surprised: 0.02, fearful: 0.02, disgusted: 0.02, neutral: 0.02 };
     scores[emotion] = 0.89;
     setSimulatedEmotions(scores);
+  };
+
+  const handleVideoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file && videoRef.current) {
+      const url = URL.createObjectURL(file);
+      videoRef.current.src = url;
+      videoRef.current.play();
+      setVideoLoaded(true);
+      setSimulatedEmotions(null);
+    }
   };
 
   const getDominant = () => {
@@ -52,10 +64,17 @@ function App() {
       }}>
         <div style={{ fontSize: "22px", fontWeight: "bold", color: "#00FFFF", letterSpacing: "4px" }}>SOLACE</div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#00FFFF", letterSpacing: "2px" }}>
-          <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: isReady ? "#00FFFF" : "#FF4500" }} />
+          <div style={{
+            width: "8px", height: "8px", borderRadius: "50%",
+            background: isReady ? "#00FFFF" : "#FF4500",
+            boxShadow: isReady ? "0 0 6px #00FFFF" : "0 0 6px #FF4500",
+          }} />
           {isReady ? "EMOTION ENGINE ACTIVE" : "LOADING MODELS..."}
         </div>
-        <div style={{ fontSize: "12px", color: "#00FFFF", letterSpacing: "2px", border: "1px solid #00FFFF", padding: "4px 12px", borderRadius: "20px" }}>
+        <div style={{
+          fontSize: "12px", color: "#00FFFF", letterSpacing: "2px",
+          border: "1px solid #00FFFF", padding: "4px 12px", borderRadius: "20px",
+        }}>
           AR26 · MISSION 3
         </div>
       </div>
@@ -70,17 +89,41 @@ function App() {
         }}>
           <div style={{ fontSize: "11px", color: "#336", letterSpacing: "2px" }}>INPUT SOURCE</div>
 
+          {/* Video player */}
           <div style={{ position: "relative", border: "1px solid #0a3a5a", borderRadius: "8px", overflow: "hidden" }}>
-            <video ref={videoRef} autoPlay muted loop controls
-              style={{ width: "100%", display: "block", background: "#020810" }}
+            <video
+              ref={videoRef}
+              autoPlay muted loop controls
+              style={{ width: "100%", display: "block", background: "#020810", minHeight: "160px" }}
             />
             <div style={{
               position: "absolute", bottom: "8px", left: "8px",
               fontSize: "11px", color: "#00FFFF", letterSpacing: "2px",
               background: "rgba(0,0,0,0.6)", padding: "2px 8px", borderRadius: "4px",
             }}>
-              ANALYZING · 24fps
+              {videoLoaded ? "ANALYZING · 24fps" : "NO VIDEO LOADED"}
             </div>
+          </div>
+
+          {/* Upload button */}
+          <label style={{
+            display: "flex", alignItems: "center", justifyContent: "center",
+            gap: "8px", padding: "10px", borderRadius: "8px",
+            border: "1px dashed #0a3a5a", cursor: "pointer",
+            fontSize: "11px", color: "#00FFFF", letterSpacing: "2px",
+            background: "#060e1f", transition: "all 0.3s",
+          }}>
+            📂 UPLOAD VIDEO FILE
+            <input
+              type="file"
+              accept="video/*"
+              onChange={handleVideoUpload}
+              style={{ display: "none" }}
+            />
+          </label>
+
+          <div style={{ fontSize: "10px", color: "#334", letterSpacing: "1px", textAlign: "center" }}>
+            Upload any video — SOLACE detects emotions automatically
           </div>
 
           <EmotionBars emotions={activeEmotions} />
@@ -89,22 +132,29 @@ function App() {
         {/* Middle panel */}
         <div style={{
           flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
-          justifyContent: "flex-start", padding: "24px 16px", gap: "16px", overflowY: "auto",
-          borderRight: "1px solid #0a2a4a",
+          justifyContent: "flex-start", padding: "24px 16px", gap: "16px",
+          overflowY: "auto", borderRight: "1px solid #0a2a4a",
         }}>
           <div style={{ fontSize: "11px", color: "#336", letterSpacing: "2px" }}>SOLACE COMPANION</div>
+
           <SOLACEFace emotions={activeEmotions} />
 
           <div style={{
             border: `1px solid ${dominantColor}`, color: dominantColor,
             padding: "6px 24px", borderRadius: "20px", fontSize: "14px",
             letterSpacing: "3px", textTransform: "uppercase",
+            boxShadow: `0 0 10px ${dominantColor}40`,
+            transition: "all 0.5s ease",
           }}>
             {dominant}
           </div>
 
+          {/* Confidence bar */}
           <div style={{ width: "100%", maxWidth: "300px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#336", marginBottom: "6px", letterSpacing: "2px" }}>
+            <div style={{
+              display: "flex", justifyContent: "space-between",
+              fontSize: "11px", color: "#336", marginBottom: "6px", letterSpacing: "2px",
+            }}>
               <span>CONFIDENCE</span>
               <span style={{ color: dominantColor }}>{confidence}%</span>
             </div>
@@ -126,24 +176,44 @@ function App() {
         </div>
       </div>
 
-      {/* Bottom bar */}
+      {/* Bottom bar - simulate emotions */}
       <div style={{
         display: "flex", alignItems: "center", gap: "12px", padding: "12px 24px",
         borderTop: "1px solid #0a2a4a", background: "#060e1f", flexWrap: "wrap",
       }}>
         <span style={{ fontSize: "11px", color: "#336", letterSpacing: "2px" }}>SIMULATE EMOTION:</span>
         {Object.keys(EMOTION_COLORS).map((emotion) => (
-          <button key={emotion} onClick={() => simulateEmotion(emotion)}
+          <button
+            key={emotion}
+            onClick={() => simulateEmotion(emotion)}
             style={{
-              background: "transparent", border: `1px solid ${EMOTION_COLORS[emotion]}`,
-              color: EMOTION_COLORS[emotion], padding: "4px 16px", borderRadius: "20px",
+              background: dominant === emotion ? `${EMOTION_COLORS[emotion]}22` : "transparent",
+              border: `1px solid ${EMOTION_COLORS[emotion]}`,
+              color: EMOTION_COLORS[emotion],
+              padding: "4px 16px", borderRadius: "20px",
               fontSize: "12px", letterSpacing: "1px", cursor: "pointer",
               textTransform: "capitalize",
               boxShadow: dominant === emotion ? `0 0 8px ${EMOTION_COLORS[emotion]}` : "none",
-            }}>
+              transition: "all 0.3s",
+            }}
+          >
             {emotion.toUpperCase()}
           </button>
         ))}
+        <button
+          onClick={() => {
+            setSimulatedEmotions(null);
+            setVideoLoaded(false);
+            if (videoRef.current) { videoRef.current.src = ""; }
+          }}
+          style={{
+            background: "transparent", border: "1px solid #334",
+            color: "#334", padding: "4px 16px", borderRadius: "20px",
+            fontSize: "12px", letterSpacing: "1px", cursor: "pointer",
+          }}
+        >
+          RESET
+        </button>
       </div>
     </div>
   );
