@@ -35,7 +35,7 @@ const ChatPanel = ({ emotions }) => {
 
     try {
       const allScores = emotions || { happy: 0, sad: 0, angry: 0, surprised: 0, fearful: 0, disgusted: 0, neutral: 1 };
-      const response = await axios.post("https://solace-backend-wr41.onrender.com/respond", {
+      const response = await axios.post("https://solace-hri-ar26-production.up.railway.app/respond", {
         session_id: "session_001",
         emotion: dominant,
         confidence: allScores[dominant] || 1,
