@@ -5,9 +5,20 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.135-009688?style=flat-square&logo=fastapi)
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)
 ![Groq](https://img.shields.io/badge/LLM-Groq%20%2F%20Llama3-orange?style=flat-square)
+![face-api.js](https://img.shields.io/badge/Vision-face--api.js-blueviolet?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 ![AR26](https://img.shields.io/badge/AR26-HackXelerator-purple?style=flat-square)
 ![Mission](https://img.shields.io/badge/Mission%203-HRI-cyan?style=flat-square)
+![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=flat-square&logo=vercel)
+![Railway](https://img.shields.io/badge/Backend-Railway-purple?style=flat-square)
+
+---
+
+## 🌐 Live Demo
+
+**[https://solace-hri-ar26-seven.vercel.app](https://solace-hri-ar26-seven.vercel.app)**
+
+> ⚠️ Backend hosted on Railway free tier — first request may take 10-30 seconds to wake up. Please wait if the chat doesn't respond immediately, then try again.
 
 ---
 
@@ -17,21 +28,23 @@ Millions of elderly individuals and people facing mental health challenges live 
 
 **SOLACE** (Social & Observational Learning Agent for Compassionate Engagement) is a real-time emotion-aware AI companion that detects a user's emotional state from a video source using in-browser computer vision, then routes that context through a multi-agent backend to generate compassionate, tone-appropriate responses — all while maintaining a session memory of the user's emotional journey and screening every output through a dedicated ethics layer.
 
-Built for the **AR26 HackXelerator — Mission 3: Human-Robot Interaction**, by a team of three CS students at the University of West London.
+Built for the **AR26 HackXelerator — Mission 3: Human-Robot Interaction**, by a team of three Computer Science students at the University of West London.
 
 ---
 
 ## ✨ Features
 
-- 🎭 **Real-time emotion detection** — classifies 7 emotional states (happy, sad, angry, surprised, fearful, disgusted, neutral) from a video source using face-api.js running entirely in-browser
-- 🤖 **Animated SOLACE face** — an expressive robot companion that visually reacts to detected emotions in real time (eyes, brows, mouth all animate)
+- 🎭 **Real-time emotion detection** — classifies 7 emotional states (happy, sad, angry, surprised, fearful, disgusted, neutral) from any uploaded video using face-api.js running entirely in-browser
+- 📂 **Video upload** — upload any video file and SOLACE detects emotions automatically frame by frame
+- 🤖 **Animated SOLACE face** — expressive robot companion that visually reacts to detected emotions in real time (eyes, brows, mouth all animate, color changes per emotion)
 - 🧠 **Multi-agent orchestration** — 4 specialised AI agents work in sync: Emotion, Conversation, Memory, and Ethics
-- 💬 **Empathetic dialogue** — powered by Groq's Llama 3, tuned for compassionate, care-first responses
+- 💬 **Empathetic dialogue** — powered by Groq's Llama 3.1, tuned for compassionate, care-first responses
 - 🧵 **Session memory** — tracks the user's emotional arc across the session and references it in responses
 - 🛡️ **Ethics / Safety agent** — screens every LLM output before it reaches the user, blocking harmful content
 - 📊 **Mood timeline** — live visual chart showing the user's emotional journey throughout the session
+- 🎮 **Simulate emotions** — buttons to manually trigger any emotion for testing and demo purposes
 - 🔒 **Privacy first** — all face processing runs client-side; no biometric data ever leaves the device
-- 💸 **100% free stack** — zero paid APIs, fully open source, deployable today
+- 💸 **100% free stack** — zero paid APIs, fully open source, deployed and live today
 
 ---
 
@@ -40,28 +53,44 @@ Built for the **AR26 HackXelerator — Mission 3: Human-Robot Interaction**, by 
 | Layer | Technology |
 |---|---|
 | Emotion Detection | face-api.js (TinyFaceDetector + FaceExpressionNet) |
-| Frontend | React 18, HTML5 Canvas, CSS Animations |
+| Frontend | React 18, CSS Animations |
 | Backend | Python, FastAPI |
-| LLM | Groq API — Llama 3 8B (free tier) |
+| LLM | Groq API — Llama 3.1 8B Instant (free tier) |
 | Agent Orchestration | Custom multi-agent system (4 agents) |
-| Frontend Deploy | GitHub Pages |
-| Backend Deploy | Render.com (free tier) |
+| Model Hosting | justadudewhohacks.github.io/face-api.js/models |
+| Frontend Deploy | Vercel |
+| Backend Deploy | Railway |
 
 ---
 
 ## 🖼️ Screenshots
 
-**Main App Interface — SOLACE reacting to detected emotion**
+**Main App Interface — SOLACE ready**
 ![App UI](./assets/screenshots/app-ui.png)
 
-**Emotion Detection Bars — Live confidence scores**
-![Emotion Bars](./assets/screenshots/emotion-bars.png)
+**Happy detected — SOLACE lights up green**
+![Happy](./assets/screenshots/happy.png)
 
-**Mood Timeline — Session emotional arc**
+**Sad detected — SOLACE responds with care**
+![Sad](./assets/screenshots/sad.png)
+
+**Angry detected**
+![Angry](./assets/screenshots/angry.png)
+
+**Surprised detected**
+![Surprised](./assets/screenshots/surprised.png)
+
+**Fearful detected**
+![Fearful](./assets/screenshots/fearful.png)
+
+**Disgusted detected**
+![Disgusted](./assets/screenshots/disgusted.png)
+
+**Chat conversation with SOLACE**
+![Chat](./assets/screenshots/chat.png)
+
+**Mood timeline — full session emotional arc**
 ![Mood Timeline](./assets/screenshots/mood-timeline.png)
-
-**Landing Page**
-![Landing Page](./assets/screenshots/landing-page.png)
 
 ---
 
@@ -94,45 +123,42 @@ Start the server:
 uvicorn main:app --reload --port 8000
 ```
 
+Verify it's running:
+```
+http://localhost:8000/health
+```
+
+Expected response:
+```json
+{"status": "SOLACE online", "agents": ["emotion", "memory", "conversation", "ethics"]}
+```
+
 ### 3. Frontend setup
 ```bash
 cd frontend
 npm install
-npm install face-api.js axios
-```
-
-Download face-api.js model files and place them in `frontend/public/models/`:
-- `tiny_face_detector_model-weights_manifest.json`
-- `tiny_face_detector_model-shard1`
-- `face_expression_recognition_model-weights_manifest.json`
-- `face_expression_recognition_model-shard1`
-
-Download from:
-```
-https://github.com/justadudewhohacks/face-api.js/tree/master/weights
-```
-
-Start the frontend:
-```bash
 npm start
 ```
+
+Open `http://localhost:3000` — the emotion models load automatically from CDN on first launch (allow 30-60 seconds).
 
 ---
 
 ## 📖 Usage
 
-1. Open the app at `http://localhost:3000`
-2. The video source begins processing automatically
-3. face-api.js detects the dominant emotion every 200ms
-4. Emotion data is sent to the FastAPI backend
-5. The 4 agents process and generate a compassionate response
-6. SOLACE's face animates to match the detected emotion
-7. The response appears in the chat panel
-8. The mood timeline updates in real time
+1. Open the app at `https://solace-hri-ar26-seven.vercel.app`
+2. Wait for **"EMOTION ENGINE ACTIVE"** — green dot in the top bar
+3. Click **📂 UPLOAD VIDEO FILE** and select any MP4 video
+4. SOLACE automatically detects emotions from the video every second
+5. The animated face, emotion bars, and mood timeline update in real time
+6. SOLACE responds in the chat panel based on the detected emotion
+7. Type messages to SOLACE directly in the chat
+8. Use the **SIMULATE EMOTION** buttons at the bottom to test any emotion manually
+9. Click **RESET** to clear the video and start a new session
 
-**To test the backend directly:**
+**Test the backend directly:**
 ```bash
-curl -X POST http://localhost:8000/respond \
+curl -X POST https://solace-hri-ar26-production.up.railway.app/respond \
   -H "Content-Type: application/json" \
   -d '{
     "session_id": "test_001",
@@ -152,16 +178,18 @@ solace-hri-ar26/
 │
 ├── frontend/
 │   ├── public/
-│   │   └── models/                  # face-api.js model weights
+│   │   ├── models/                  # face-api.js model weights (local fallback)
+│   │   └── index.html
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── SOLACEFace.jsx       # animated robot face
 │   │   │   ├── EmotionBars.jsx      # live emotion visualisation
-│   │   │   ├── ChatPanel.jsx        # conversation UI
+│   │   │   ├── ChatPanel.jsx        # conversation UI + backend connection
 │   │   │   └── MoodTimeline.jsx     # session emotional arc chart
 │   │   ├── hooks/
-│   │   │   └── useEmotionDetection.js
-│   │   └── App.js
+│   │   │   └── useEmotionDetection.js  # face-api.js detection hook
+│   │   ├── App.js                   # main app layout + video upload
+│   │   └── index.js
 │   └── package.json
 │
 ├── backend/
@@ -169,9 +197,23 @@ solace-hri-ar26/
 │   ├── requirements.txt
 │   └── .env.example
 │
-├── solace-landing.html
+├── assets/
+│   └── screenshots/                 # app screenshots
+│
+├── solace-landing.html              # standalone landing page
 └── README.md
 ```
+
+---
+
+## 🧠 The 4 Agents
+
+| Agent | Role |
+|---|---|
+| **Emotion Agent** | Converts raw face-api.js scores into structured emotional context with intensity levels |
+| **Memory Agent** | Tracks the user's emotional arc across the session — references past states in responses |
+| **Conversation Agent** | Calls Groq Llama 3.1 with full emotional context to generate compassionate replies |
+| **Ethics / Safety Agent** | Screens every LLM response before delivery — blocks harmful content, ensures care-appropriate tone |
 
 ---
 
@@ -179,21 +221,23 @@ solace-hri-ar26/
 
 | Metric | Result |
 |---|---|
-| Emotion detection speed | < 50ms per frame |
-| Emotions classified | 7 |
-| Detection frequency | Every 200ms |
-| Face data transmitted to server | 0 bytes (all client-side) |
+| Emotion detection speed | ~1s per frame |
+| Emotions classified | 7 (happy, sad, angry, surprised, fearful, disgusted, neutral) |
+| Detection method | face-api.js TinyFaceDetector + FaceExpressionNet |
+| Face data transmitted to server | 0 bytes — all client-side |
 | Agent pipeline latency | ~1.2s end-to-end |
-| LLM model | Llama 3 8B via Groq |
+| LLM model | Llama 3.1 8B Instant via Groq |
+| Cost | £0 — fully free stack |
 
 ---
 
 ## 🧗 Challenges & Learnings
 
-- Coordinating 4 agents in a single request without noticeable latency required careful prompt engineering and strict response length constraints
-- Running face-api.js on a video file (rather than live webcam) required managing frame timing and correctly passing the video element as the detection source
+- Coordinating 4 agents in a single request without noticeable latency required careful prompt engineering and strict response length constraints on the LLM
+- face-api.js model loading required switching from local files to CDN hosting — `justadudewhohacks.github.io/face-api.js/models` proved to be the most reliable source
 - Designing the ethics agent for an elderly care context pushed the team to think beyond simple content filtering — towards genuinely responsible AI
-- Keeping the entire stack free meant being creative with infrastructure — Render.com and GitHub Pages proved to be a solid zero-cost production setup
+- The Groq model `llama3-8b-8192` was decommissioned mid-build — migrating to `llama-3.1-8b-instant` taught us the importance of version-aware API integrations
+- Deploying face-api.js to Vercel required resolving Node.js `fs` module polyfills for browser builds
 
 ---
 
@@ -201,21 +245,31 @@ solace-hri-ar26/
 
 - [ ] Multilingual support — Arabic, Malayalam, and other languages for wider accessibility
 - [ ] Voice response — text-to-speech so SOLACE speaks its replies aloud
-- [ ] Longitudinal memory — persist emotional history across sessions
-- [ ] Wearable integration — heart rate / stress sensor data for multimodal emotional context
+- [ ] Longitudinal memory — persist emotional history across sessions using a database
+- [ ] Wearable integration — heart rate and stress sensor data for multimodal emotional context
 - [ ] Mobile app — port to iOS/Android for elderly users
 - [ ] Fine-tuned model — train on therapeutic dialogue datasets for deeper empathy
+- [ ] Real-time webcam support — live webcam feed alongside uploaded video
 
 ---
 
-## 🌐 Demo & Live Links
+## 🎥 Demo Video
+
+[![SOLACE Demo](https://img.shields.io/badge/Watch-Demo%20Video-red?style=flat-square&logo=youtube)](https://youtube.com/your-link-here)
+
+> Replace the link above with your YouTube demo URL after recording.
+
+---
+
+## 🌐 Live Links
 
 | Resource | Link |
 |---|---|
-| 🚀 Live App | *Coming soon* |
-| 🎥 Demo Video | *Submitting April 10, 2026* |
+| 🚀 Live App | [solace-hri-ar26-seven.vercel.app](https://solace-hri-ar26-seven.vercel.app) |
+| 🔧 Backend API | [solace-hri-ar26-production.up.railway.app](https://solace-hri-ar26-production.up.railway.app/health) |
+| 🎥 Demo Video | *Submitted April 10, 2026* |
 | 📋 KXSB Project Page | [kxsb.org/ar26](https://www.kxsb.org/ar26) |
-| 🏠 Landing Page | [solace-landing](https://fsafva13-coder.github.io/solace-hri-ar26) |
+| 💻 GitHub | [fsafva13-coder/solace-hri-ar26](https://github.com/fsafva13-coder/solace-hri-ar26) |
 
 ---
 
@@ -223,8 +277,8 @@ solace-hri-ar26/
 
 | Name | Role |
 |---|---|
-| **Safva** | Tech Lead · Backend (FastAPI + 4 agents + Groq integration) |
-| **Asna** | Frontend Lead (React + animated SOLACE face + UI/UX) |
+| **Safva** | Tech Lead · Backend (FastAPI + 4 agents + Groq integration + deployment) |
+| **Asna** | Frontend Lead (React + animated SOLACE face + full UI/UX) |
 | **Neha** | ML Engineer (face-api.js emotion detection pipeline + integration) |
 
 *University of West London — BSc Computer Science*
