@@ -259,9 +259,8 @@ solace-hri-ar26/
 
 ## 🎥 Demo Video
 
-[![SOLACE Demo](https://img.shields.io/badge/Watch-Demo%20Video-red?style=flat-square&logo=youtube)](https://youtube.com/your-link-here)
+[![SOLACE Demo](https://img.shields.io/badge/Watch-Demo%20Video-red?style=flat-square&logo=youtube)](https://youtu.be/KAkebvccx-Q)
 
-> Replace the link above with your YouTube demo URL after recording.
 
 ---
 
@@ -271,7 +270,7 @@ solace-hri-ar26/
 |---|---|
 | 🚀 Live App | [solace-hri-ar26-seven.vercel.app](https://solace-hri-ar26-seven.vercel.app) |
 | 🔧 Backend API | [solace-hri-ar26-production.up.railway.app/health](https://solace-hri-ar26-production.up.railway.app/health) |
-| 🎥 Demo Video | *Submitting April 10, 2026* |
+| 🎥 Demo Video | [Watch on YouTube](https://youtu.be/KAkebvccx-Q) |
 | 📋 KXSB Project Page | [kxsb.org/ar26](https://www.kxsb.org/ar26) |
 | 💻 GitHub | [fsafva13-coder/solace-hri-ar26](https://github.com/fsafva13-coder/solace-hri-ar26) |
 
