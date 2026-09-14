@@ -221,6 +221,28 @@ solace-hri-ar26/
 
 ---
 
+## 🏗️ Architecture
+
+```mermaid
+flowchart LR
+    A["Browser\n(uploaded video / webcam frame)"] -->|"face-api.js\nruns client-side"| B["Emotion scores\n(7 classes)"]
+    B -->|"POST /respond"| C["FastAPI backend"]
+
+    subgraph Agents["4-agent pipeline"]
+        direction LR
+        D["Emotion Agent\nraw scores → structured context"] --> E["Memory Agent\ntracks emotional arc"]
+        E --> F["Conversation Agent\nGroq · Llama 3.1"]
+        F --> G["Ethics / Safety Agent\nregex screen + fallback"]
+    end
+
+    C --> D
+    G -->|"JSON reply"| H["Chat panel + animated\nSOLACE face"]
+```
+
+No raw face/video data ever leaves the browser — only the derived emotion scores (numbers, not images) are sent to the backend. This client-side-only face processing was a deliberate design decision: it keeps SOLACE usable in an elderly-care context without asking anyone to trust a server with biometric video of their face.
+
+---
+
 ## 📊 Results & Performance
 
 | Metric | Result |
@@ -232,6 +254,37 @@ solace-hri-ar26/
 | Agent pipeline latency | ~1.2s end-to-end |
 | LLM model | Llama 3.1 8B Instant via Groq |
 | Total cost | £0 — fully free stack |
+
+---
+
+## 🧪 v2 Evaluation
+
+The original hackathon README only reported engineering metrics (latency, cost). For this pass, SOLACE was actually run end-to-end — backend and frontend both locally, `localhost:8000` + `localhost:3000` — and tested against its own stated behavior, not just checked for "does it crash."
+
+| Test | What was checked | Result |
+|---|---|---|
+| All 7 simulated emotions (happy, sad, angry, surprised, fearful, disgusted, neutral) | Does the animated face/colour match the emotion, and is the chat reply tonally appropriate rather than generic? | ✅ Pass on all 7 |
+| Response latency | Time from triggering an emotion to a reply appearing | ✅ Consistently under 3 seconds |
+| Memory continuity | Trigger two different emotions in sequence — does the reply reference the shift, per the Memory Agent's job? | ✅ Pass — the shift was acknowledged |
+| Safety filter | Send a message matching one of the `BLOCKED_PATTERNS` in `main.py` — does it correctly fall back to the safe response instead of an LLM-generated one? | ✅ Pass — fallback triggered correctly |
+
+**Real example** (not fabricated — captured directly from a local run): simulating **Fearful** detected at 89% confidence produced this reply from the Conversation Agent:
+
+> "You're feeling scared, and that's a really big and overwhelming feeling. It's okay to be scared, and I'm here to stay with you. Can you tell me what's making you feel this way? Sometimes talking about it can help make it feel a little more manageable."
+
+**Scope of this eval, honestly:** this was run by the builder alone, once, on a local setup with the Simulate Emotion buttons rather than live camera input from a stranger's face. It confirms the pipeline behaves correctly under controlled conditions — it does not yet tell us how the emotion *detection* itself performs on unfamiliar faces, lighting, or genuinely ambiguous expressions, since that requires outside testers. See Limitations below.
+
+---
+
+## ⚠️ Limitations
+
+- **The safety filter is simple keyword matching, not a trained classifier.** `ethics_agent()` in `main.py` checks the reply against three regex patterns. It reliably catches the exact phrasing it's written for, but a differently-worded harmful message could slip through, and an innocent message that happens to contain a flagged word could get blocked unnecessarily. This is the single limitation explained on camera in the demo video.
+- **No live webcam yet.** Emotion detection currently runs on an uploaded video file, not a real-time camera feed — a real elderly user would need to record and upload a clip rather than just sit in front of the camera. Live webcam support is on the roadmap above.
+- **Session memory doesn't persist.** The Memory Agent tracks emotional arc only in server RAM (`sessions: dict`) — a backend restart or a new session wipes it. There's no long-term history across visits.
+- **Not built for many concurrent users.** The in-memory session store works for a demo but isn't a substitute for a real database (Redis/SQLite) under real load.
+- **English only**, and **not a substitute for professional care** — SOLACE is explicitly instructed never to give medical advice, but it also isn't monitored by a clinician and shouldn't be treated as one.
+- **Railway's free tier sleeps when idle** — the first request after inactivity can take 10–30 seconds, which could read as "broken" to a first-time user who doesn't know to wait.
+- **This v2 eval was self-tested**, not tested by an outside user unfamiliar with the app — see the Scope note above.
 
 ---
 
@@ -273,6 +326,14 @@ solace-hri-ar26/
 | 🎥 Demo Video | [Watch on YouTube](https://youtu.be/KAkebvccx-Q) |
 | 📋 KXSB Project Page | [kxsb.org/ar26](https://www.kxsb.org/ar26) |
 | 💻 GitHub | [fsafva13-coder/solace-hri-ar26](https://github.com/fsafva13-coder/solace-hri-ar26) |
+
+---
+
+## 🤖 Built With AI — Transparency
+
+The FastAPI backend (`main.py`, including the four-agent orchestration — emotion, memory, conversation, ethics) and the React frontend components (`SOLACEFace.jsx`, `ChatPanel.jsx`, `EmotionBars.jsx`, `MoodTimeline.jsx`, `App.js`) were built with Claude's help, from working through the implementation to refining it.
+
+What I did myself: designed the four-agent split and the emotion → tone mapping, wrote the prompt rules guiding how SOLACE communicates, and — for this v2 pass — personally ran the local evaluation documented above (all 7 simulated emotions, the memory-continuity check, and the safety-filter test) to verify the system actually behaves the way it's supposed to, rather than assuming the code was correct because Claude wrote it.
 
 ---
 
