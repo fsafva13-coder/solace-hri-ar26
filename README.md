@@ -10,16 +10,16 @@
 ![AR26](https://img.shields.io/badge/AR26-HackXelerator-purple?style=flat-square)
 ![Mission](https://img.shields.io/badge/Mission%203-HRI-cyan?style=flat-square)
 ![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=flat-square&logo=vercel)
-![Railway](https://img.shields.io/badge/Backend-Railway-purple?style=flat-square)
 
 ---
 
-## 🌐 Live Demo
+## 🎥 Demo
 
-**[https://solace-hri-ar26-seven.vercel.app](https://solace-hri-ar26-seven.vercel.app)**
+[![SOLACE Demo](https://img.shields.io/badge/Watch-Demo%20Video-red?style=flat-square&logo=youtube)](https://youtu.be/KAkebvccx-Q)
 
-> 💻 Best experienced on desktop or laptop.
-> ⚠️ Backend hosted on Railway free tier — first request may take 10-30 seconds to wake up. Please wait if the chat doesn't respond immediately, then try again.
+**The demo video is the best way to see SOLACE in action.** It shows the full pipeline end to end: emotion detection, the animated face, multi-agent replies, and the mood timeline.
+
+> ℹ️ **Hosted backend currently offline.** The original backend host had a platform-wide security incident (October 2026), so the deployment was taken down and all API keys were revoked as a precaution. The frontend UI is still viewable at [solace-hri-ar26-seven.vercel.app](https://solace-hri-ar26-seven.vercel.app), but chat replies need the backend. To run the full app, follow the [Installation](#-installation) steps below. It takes about 5 minutes with a free Groq key.
 
 ---
 
@@ -45,7 +45,7 @@ Built for the **AR26 HackXelerator — Mission 3: Human-Robot Interaction**, by 
 - 📊 **Mood timeline** — live visual chart showing the user's emotional journey throughout the session
 - 🎮 **Simulate emotions** — buttons to manually trigger any emotion for testing and demo
 - 🔒 **Privacy first** — all face processing runs client-side; no biometric data ever leaves the device
-- 💸 **100% free stack** — zero paid APIs, fully open source, deployed and live
+- 💸 **100% free stack** — zero paid APIs, fully open source, runs locally in minutes
 
 ---
 
@@ -60,7 +60,6 @@ Built for the **AR26 HackXelerator — Mission 3: Human-Robot Interaction**, by 
 | Agent Orchestration | Custom multi-agent system (4 agents) |
 | Model Hosting | justadudewhohacks.github.io/face-api.js/models |
 | Frontend Deploy | Vercel |
-| Backend Deploy | Railway |
 
 ---
 
@@ -117,7 +116,7 @@ cd backend
 pip install fastapi uvicorn groq python-dotenv
 ```
 
-Create a `.env` file inside `backend/`:
+Create a `.env` file inside `backend/` (it is git-ignored — never commit it):
 ```
 GROQ_API_KEY=your_groq_api_key_here
 ```
@@ -150,7 +149,7 @@ Open `http://localhost:3000` — emotion models load automatically from CDN on f
 
 ## 📖 Usage
 
-1. Open the app at **[https://solace-hri-ar26-seven.vercel.app](https://solace-hri-ar26-seven.vercel.app)**
+1. Start the backend and frontend as above, then open **http://localhost:3000**
 2. Wait for **"EMOTION ENGINE ACTIVE"** — green dot in the top bar
 3. Click **📂 UPLOAD VIDEO FILE** and select any MP4 video
 4. SOLACE automatically detects emotions from the video every second
@@ -162,7 +161,7 @@ Open `http://localhost:3000` — emotion models load automatically from CDN on f
 
 **Test the backend API directly:**
 ```bash
-curl -X POST https://solace-hri-ar26-production.up.railway.app/respond \
+curl -X POST http://localhost:8000/respond \
   -H "Content-Type: application/json" \
   -d '{
     "session_id": "test_001",
@@ -279,11 +278,11 @@ The original hackathon README only reported engineering metrics (latency, cost).
 ## ⚠️ Limitations
 
 - **The safety filter is simple keyword matching, not a trained classifier.** `ethics_agent()` in `main.py` checks the reply against three regex patterns. It reliably catches the exact phrasing it's written for, but a differently-worded harmful message could slip through, and an innocent message that happens to contain a flagged word could get blocked unnecessarily. This is the single limitation explained on camera in the demo video.
-- **No live webcam yet.** Emotion detection currently runs on an uploaded video file, not a real-time camera feed — a real elderly user would need to record and upload a clip rather than just sit in front of the camera. Live webcam support is on the roadmap above.
+- **No live webcam yet.** Emotion detection currently runs on an uploaded video file, not a real-time camera feed — a real elderly user would need to record and upload a clip rather than just sit in front of the camera. Live webcam support is on the roadmap below.
 - **Session memory doesn't persist.** The Memory Agent tracks emotional arc only in server RAM (`sessions: dict`) — a backend restart or a new session wipes it. There's no long-term history across visits.
 - **Not built for many concurrent users.** The in-memory session store works for a demo but isn't a substitute for a real database (Redis/SQLite) under real load.
 - **English only**, and **not a substitute for professional care** — SOLACE is explicitly instructed never to give medical advice, but it also isn't monitored by a clinician and shouldn't be treated as one.
-- **Railway's free tier sleeps when idle** — the first request after inactivity can take 10–30 seconds, which could read as "broken" to a first-time user who doesn't know to wait.
+- **No hosted backend right now** — the live chat requires running the backend locally (see Demo note above).
 - **This v2 eval was self-tested**, not tested by an outside user unfamiliar with the app — see the Scope note above.
 
 ---
@@ -295,11 +294,13 @@ The original hackathon README only reported engineering metrics (latency, cost).
 - Designing the ethics agent for an elderly care context pushed the team to think beyond simple content filtering — towards genuinely responsible AI
 - The Groq model `llama3-8b-8192` was decommissioned mid-build — migrating to `llama-3.1-8b-instant` taught the team the importance of version-aware API integrations
 - Deploying face-api.js to Vercel required resolving Node.js `fs` module polyfills for browser builds — solved via `package.json` browser field overrides
+- When the backend's hosting platform disclosed a breach of stored environment variables (October 2026), the response was to revoke every API key at the source, take the deployment down, and audit the repo for committed secrets — a practical reminder that platform-stored secrets are only as safe as the platform
 
 ---
 
 ## 🔮 Future Improvements
 
+- [ ] Re-deploy the backend on a new host with secrets managed per-environment
 - [ ] Multilingual support — Arabic, Malayalam, and other languages for wider accessibility
 - [ ] Voice response — text-to-speech so SOLACE speaks its replies aloud
 - [ ] Longitudinal memory — persist emotional history across sessions using a database
@@ -310,20 +311,12 @@ The original hackathon README only reported engineering metrics (latency, cost).
 
 ---
 
-## 🎥 Demo Video
-
-[![SOLACE Demo](https://img.shields.io/badge/Watch-Demo%20Video-red?style=flat-square&logo=youtube)](https://youtu.be/KAkebvccx-Q)
-
-
----
-
-## 🌐 Live Links
+## 🌐 Links
 
 | Resource | Link |
 |---|---|
-| 🚀 Live App | [solace-hri-ar26-seven.vercel.app](https://solace-hri-ar26-seven.vercel.app) |
-| 🔧 Backend API | [solace-hri-ar26-production.up.railway.app/health](https://solace-hri-ar26-production.up.railway.app/health) |
 | 🎥 Demo Video | [Watch on YouTube](https://youtu.be/KAkebvccx-Q) |
+| 🖥️ Frontend UI (chat offline) | [solace-hri-ar26-seven.vercel.app](https://solace-hri-ar26-seven.vercel.app) |
 | 📋 KXSB Project Page | [kxsb.org/ar26](https://www.kxsb.org/ar26) |
 | 💻 GitHub | [fsafva13-coder/solace-hri-ar26](https://github.com/fsafva13-coder/solace-hri-ar26) |
 
